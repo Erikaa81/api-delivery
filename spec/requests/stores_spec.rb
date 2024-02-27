@@ -89,14 +89,14 @@ RSpec.describe "/stores", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        {name: "Loja da Mama"}
       }
 
       it "updates the requested store" do
         store = Store.create! valid_attributes
         patch store_url(store), params: { store: new_attributes }
         store.reload
-        skip("Add assertions for updated state")
+        expect(store.name).to eq "Loja da Mama"
       end
 
       it "redirects to the store" do
