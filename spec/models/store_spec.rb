@@ -1,5 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Store, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
-end
+  describe "validations" do 
+    it {should validate_presence_of :name} 
+    it {should validate_length_of(:name).is_at_least(3)}
+    end
+end 
+
