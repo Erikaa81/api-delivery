@@ -20,7 +20,7 @@ end
 end
 
 [
-    "Macaarao",
+    "Macarrão",
     "Risotto whith Seafood",
     "Pizza",
     "Pasta carbonara"
