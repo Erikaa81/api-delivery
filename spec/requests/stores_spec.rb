@@ -17,14 +17,27 @@ RSpec.describe "/stores", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # Store. As you add validations to Store, be sure to
   # adjust the attributes here as well.
+ let(:user){
+  user = User.new(
+    email: "user@example.com",
+    password:"123456", 
+    password_confirmation: "123456"
+  )
+  user.save!
+  user
+ }
+ 
   let(:valid_attributes) {
-    {name:"Great Restaurant"}
+    {name:"Great Restaurant", user: user}
   }
 
   let(:invalid_attributes) {
-   {name: nil}
-}
-
+    {name:nil}
+  }
+  before{
+    sign_in(user)
+  }
+  
   describe "GET /index" do
     it "renders a successful response" do
       Store.create! valid_attributes
@@ -46,7 +59,7 @@ RSpec.describe "/stores", type: :request do
       get new_store_url
       expect(response).to be_successful
     end
-  end
+end
 
   describe "GET /edit" do
     it "renders a successful response" do
@@ -84,7 +97,7 @@ RSpec.describe "/stores", type: :request do
       end
     
     end
-  end
+  
 
   describe "PATCH /update" do
     context "with valid parameters" do
@@ -106,6 +119,7 @@ RSpec.describe "/stores", type: :request do
         expect(response).to redirect_to(store_url(store))
       end
     end
+  end
 
     context "with invalid parameters" do
     
@@ -116,7 +130,7 @@ RSpec.describe "/stores", type: :request do
       end
     
     end
-  end
+
 
   describe "DELETE /destroy" do
     it "destroys the requested store" do
@@ -132,4 +146,5 @@ RSpec.describe "/stores", type: :request do
       expect(response).to redirect_to(stores_url)
     end
   end
+end
 end
