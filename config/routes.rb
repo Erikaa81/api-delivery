@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   devise_for :users
   resources :stores
   get "listing" => "products#listing"
+  
+  post "new" => "registrations#create", as: :create_registration
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root to: "welcome#index"
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
