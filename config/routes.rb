@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   
   post "new" => "registrations#create", as: :create_registration
   get "me" => "registrations#me"
+  post "sign_in" => "registrations#sign_in"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root to: "welcome#index"
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
