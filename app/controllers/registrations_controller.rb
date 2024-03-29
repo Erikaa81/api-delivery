@@ -3,7 +3,11 @@ class RegistrationsController < ApplicationController
   before_action :authenticate!, only: [:me]
  
   def me
-  end
+    render json: {
+    id: current_user.id, email: current_user.email
+    }
+    end
+    
 
   def sign_in
     user = User.find_by(email: sign_in_params[:email])
@@ -32,3 +36,6 @@ class RegistrationsController < ApplicationController
     params.required(:user).permit(:email, :password, :password_confirmation, :role)
   end
 end
+
+
+
