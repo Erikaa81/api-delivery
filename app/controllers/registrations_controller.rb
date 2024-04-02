@@ -6,6 +6,7 @@ class RegistrationsController < ApplicationController
     render json: {
     id: current_user.id, email: current_user.email
     }
+    
     end
     
 
@@ -27,7 +28,14 @@ class RegistrationsController < ApplicationController
     end
   end
 
-  private
+rescue_from User::InvalidToken, with: :not_authorized
+  
+private
+
+  def not_authorized(e)
+    render json: {message: "Nope!"}, status: 401
+  end
+
   def sign_in_params
     params.required(:login).permit(:email, :password)
   end 
