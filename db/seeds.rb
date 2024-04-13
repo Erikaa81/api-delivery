@@ -10,6 +10,20 @@ if !admin
     admin.save!
 end
 
+["Aracelis Weissnat", "Pasquale Wisozk"].each do |buyer|
+  email = buyer.split.map { |s| s.downcase }.join(".")
+  user = User.find_by(email: email)
+  if !user
+    user = User.new(
+      email: "#{email}@example.com",
+      password: "123456",
+      password_confirmation: "123456",
+      role: :buyer
+    )
+    user.save!
+  end
+end
+
 [
   "Mamamia",  
   "Burgy"
