@@ -27,6 +27,8 @@ class RegistrationsController < ApplicationController
 
     if @user.save
       render json: {"email": @user.email}
+    else
+      render json: {}, status: :unprocessable_entity
     end
   end
 
