@@ -2,6 +2,8 @@ class User < ApplicationRecord
   class InvalidToken < StandardError; end 
 
   enum :role, [:admin, :seller, :buyer]
+  validates :role, presence: true
+
   has_many :stores
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -25,7 +27,7 @@ class User < ApplicationRecord
   rescue JWT::DecodeError => e
     Rails.logger.error "erro ao decodificar token JWT: #{e.message}"
     raise InvalidToken.new 
-    
+
   end
 end
 
