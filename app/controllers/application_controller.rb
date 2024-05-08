@@ -22,6 +22,14 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def only_buyers!
+    is_buyer = (current_user && current_user.buyer?) && current_credential.buyer?
+    
+    if !is_buyer
+      render json: {message: "Not authorized"},status: 401
+    end
+  end
+
   def check_token!
     if user = authenticate_with_http_token {|t, _| User.from_token(t)}
       @user = user
