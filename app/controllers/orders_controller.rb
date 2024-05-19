@@ -11,6 +11,12 @@ class OrdersController < ApplicationController
       end
     end
 
+    def index 
+      @orders = Order.where(buyer: current_user)
+    end
+
+    rescue_from User::InvalidToken, with: :not_authorized
+
     private
 
     def order_params
