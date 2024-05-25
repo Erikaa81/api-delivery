@@ -20,8 +20,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  rescue_from User::InvalidToken, with: :not_authorized
+
   private
 
+  def not_authorized(e)
+    render json: {message: "Invalid Token"}, status: 401
+  end
+  
   def only_buyers!
     is_buyer = (current_user && current_user.buyer?) && current_credential.buyer?
     
