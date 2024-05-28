@@ -17,7 +17,19 @@ RSpec.describe "stores/edit", type: :view do
       user: user
     )
   }
+  let(:admin) {
+      User.create!(
+        email: "admin@example.com",
+        password: "123456",
+        password_confirmation: "123456",
+        role: :admin
+      )
+    }
 
+    before do
+      sign_in(user)
+    end
+    
   before(:each) do
     assign(:store, store)
   end
