@@ -1,27 +1,26 @@
 class ProductsController < ApplicationController
   skip_forgery_protection
   before_action :authenticate!
-
-
   before_action :set_product, only: %i[show update destroy]
   rescue_from User::InvalidToken, with: :not_authorized
 
-  def index
+
+    def index
     if params[:store_id].present?
-      @products = Product.where(store_id: params[:store_id])
+      @products = Product.not_deleted.where(store_id: params[:store_id]).includes(:image_attachment).all
     else
       @products = Product.all
     end
     respond_to do |format|
-      format.html # render padrão (index.html.erb)
-      format.json { render json: @products }
+      format.html 
+      format.json { render json: @products.map { |product| product.as_json(methods: :image_url) } }
     end
   end
 
   def products_store
     @store = Store.find(params[:store_id])
-    @products = @store.products
-    render json: @products
+    @products = @store.products.includes(image_attachment: :blob)
+    render json: @products.map { |product| product.as_json(methods: :image_url) }
   end
   
   def listing
@@ -38,14 +37,12 @@ class ProductsController < ApplicationController
     end
     respond_to do |format|
       format.html 
-      format.json { render json: @products }
+      format.json { render json: @products.map { |product| product.as_json(methods: :image_url) } }
     end
   end
 
   def show
-  
-    render json: @product
-
+    render json: @product.as_json(methods: :image_url), status: :ok
   end
 
   def create
@@ -53,7 +50,7 @@ class ProductsController < ApplicationController
     respond_to do |format|
       if @product.save
         format.html { redirect_to @product, notice: 'Product was successfully created.' }
-        format.json { render json: @product, status: :created }
+        format.json { render json: @product.as_json(methods: :image_url), status: :created }
       else
         format.html { render :new }
         format.json { render json: @product.errors, status: :unprocessable_entity }
@@ -62,38 +59,34 @@ class ProductsController < ApplicationController
   end
 
   def update
+    @product = Product.find(params[:id])
     if @product.update(product_params)
-      
-      render json: @product, status: :ok
+      if params[:product][:image].present?
+        @product.image.attach(params[:product][:image])
+      end
+      render json: @product.as_json(methods: :image_url), status: :ok
     else
       render json: @product.errors, status: :unprocessable_entity
     end
   end
-
+  
   def destroy
-    if @product.destroy
-      respond_to do |format|
-        format.html { redirect_to products_url, notice: 'Product was successfully destroyed from store.' }
-        format.json { render json: { message: "Product destroyed from store!" }, status: :ok }
-      end
+    @product = Product.find(params[:id])
+    if @product.soft_delete
+      render json: { message: "Produto excluído com sucesso." }, status: :ok
     else
-      respond_to do |format|
-        format.html { redirect_to products_url, alert: 'Product could not be destroyed from store.' }
-        format.json { render json: { error: "Failed to destroy product from store." }, status: :unprocessable_entity }
-      end
+      render json: { error: "Falha ao excluir produto." }, status: :unprocessable_entity
     end
   end
-  private
+
+
+ private
 
   def set_product
-    # @product = Product.find(params[:id])
-    @store = Store.find(params[:store_id])
-    @product = @store.products.find(params[:product_id])
-    # @product = Product.find(params[:id])
+    @product = Product.find(params[:id])
   end
 
   def product_params
-    params.require(:product).permit(:title, :price, :store_id)
+    params.require(:product).permit(:title, :price, :store_id, :image)
   end
- 
 end
