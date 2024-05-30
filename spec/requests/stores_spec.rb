@@ -177,11 +177,14 @@ end
 
 
   describe "DELETE /destroy" do
-    it "destroys the requested store" do
-      store = Store.create! valid_attributes
+    it "soft deletes the requested store" do
+      user = User.create!(email: "user@example.com", password: "password", role: :seller)
+      store = user.stores.create!(name: "Test Store", deleted: false) # Definindo `deleted` como false explicitamente
+      expect(store.deleted).to eq(false) # Garante que `deleted` comece como `false`
+      
       expect {
         delete store_url(store)
-      }.to change(Store, :count).by(-1)
+      }.to change { store.reload.deleted }.from(false).to(true)
     end
 
     it "redirects to the stores list" do
