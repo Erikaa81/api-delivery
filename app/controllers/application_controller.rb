@@ -36,6 +36,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def buyer?
+    (current_user && current_user.buyer?) && current_credential.buyer?
+   
+  end
+
   def check_token!
     if user = authenticate_with_http_token {|t, _| User.from_token(t)}
       @user = user

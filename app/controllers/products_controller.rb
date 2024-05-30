@@ -4,18 +4,25 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[show update destroy]
   rescue_from User::InvalidToken, with: :not_authorized
 
-
-    def index
+  def index
     if params[:store_id].present?
-      @products = Product.not_deleted.where(store_id: params[:store_id]).includes(:image_attachment).all
+      @products = Product.where(store_id: params[:store_id]).order(:title).page(params[:page]).includes(:image_attachment)
     else
-      @products = Product.all
+      @products = Product.order(:title).page(params[:page]).includes(:image_attachment)
     end
-    respond_to do |format|
-      format.html 
-      format.json { render json: @products.map { |product| product.as_json(methods: :image_url) } }
+  
+  respond_to do |format|
+    format.html 
+    format.json do
+      if buyer?
+        page = params.fetch(:page, 1)
+        @products = Product.where(store_id: params[:store_id]).order(:title).page(page).includes(:image_attachment)
+      else
+        render json: { error: "Unauthorized" }, status: :unauthorized
+      end
     end
   end
+end
 
   def products_store
     @store = Store.find(params[:store_id])
