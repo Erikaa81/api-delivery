@@ -1,8 +1,9 @@
 class ProductsController < ApplicationController
   skip_forgery_protection
-  before_action :authenticate!
+  before_action :authenticate!, :set_locale!
   before_action :set_product, only: %i[show update destroy]
   rescue_from User::InvalidToken, with: :not_authorized
+  
 
   def index
     if params[:store_id].present?

@@ -48,6 +48,12 @@ class ApplicationController < ActionController::Base
       render json: {message: "Not authorized"}, status: 401
     end
   end
+
+  def set_locale!
+    if params[:locale].present?
+      I18n.locale = params[:locale]
+    end
+  end
 end
 
 
