@@ -1,0 +1,9 @@
+
+<p>Email: <%= @buyer.user.email %></p>
+
+<div>
+  <%= link_to 'Editar', edit_buyer_path(@buyer) %> |
+  <%= link_to 'Voltar', buyers_path %>
+  <%= button_to "Destroy this buyer", @buyer, method: :delete %>
+  </div>
+</div>

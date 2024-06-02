@@ -1,0 +1,47 @@
+<%= form_with(model: @buyer, local: true) do |form| %>
+  <% if @buyer.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@buyer.errors.count, "error") %> prohibited this buyer from being saved:</h2>
+      <ul>
+        <% @buyer.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form.fields_for :user, @buyer.build_user do |user_fields| %>
+    <div class="field">
+      <div class="field-label">
+        <%= user_fields.label :email %>
+      </div>
+      <div class="field-input">
+        <%= user_fields.email_field :email %>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <%= user_fields.label :password %>
+      </div>
+      <div class="field-input">
+        <%= user_fields.password_field :password %>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <%= user_fields.label :password_confirmation %>
+      </div>
+      <div class="field-input">
+        <%= user_fields.password_field :password_confirmation %>
+      </div>
+    </div>
+
+    <%= user_fields.hidden_field :role, value: 'buyer' %>
+  <% end %>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
