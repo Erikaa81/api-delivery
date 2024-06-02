@@ -20,9 +20,15 @@ class StoresController < ApplicationController
     end
   end
 
+
   def show
-    render json: @store.as_json(methods: :image_url), status: :ok
+    @store = Store.find(params[:id])
+    respond_to do |format|
+      format.html 
+      format.json { render json: @store.as_json(methods: :image_url) }
+    end
   end
+
 
   def new
     @store = Store.new
@@ -71,6 +77,18 @@ class StoresController < ApplicationController
     end
   end
 
+  def toggle_activation
+    @store = Store.find(params[:id])
+    if @store.active
+      @store.update(active: false)
+      flash[:notice] = "Loja desativada com sucesso."
+    else
+      @store.update(active: true)
+      flash[:notice] = "Loja ativada com sucesso."
+    end
+    redirect_to stores_url
+  end
+  
   private
 
   def set_store

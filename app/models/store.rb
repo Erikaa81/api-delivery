@@ -5,6 +5,12 @@ class Store < ApplicationRecord
   has_one_attached :image
   before_validation :ensure_seller
   validates :name, presence: true, length: { minimum: 3 }
+  validates :active, inclusion: { in: [true, false] }
+
+
+  def deactivate!
+    update(active: false)
+  end
 
   def soft_delete
     update(deleted: true)

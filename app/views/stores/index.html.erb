@@ -7,6 +7,12 @@
     <%= render store %>
     <p>
       <%= link_to "Show this store", store %>
+      <% if store.active? %>
+      <%= link_to 'Desativar', toggle_activation_store_path(store), method: :patch, data: { confirm: 'Você tem certeza que deseja desativar este usuário?' } %>
+    <% else %>
+      <%= link_to 'Ativar', toggle_activation_store_path(store), method: :patch, data: { confirm: 'Você tem certeza que deseja ativar este usuário?' } %>
+    <% end %>
+      </td>
     </p>
   <% end %>
 </div>
