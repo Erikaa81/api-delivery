@@ -3,12 +3,23 @@ class User < ApplicationRecord
 
   enum :role, [:admin, :seller, :buyer]
   validates :role, presence: true
-
+  validates :active, inclusion: { in: [true, false] }
   has_many :stores
+  has_one :buyer
+
+
+  def deactivate!
+    update(active: false)
+  end
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  has_one :buyer, dependent: :destroy
+  validates :role, presence: true, inclusion: { in: %w[buyer seller admin] }
+
+  after_save :create_buyer_if_needed
 
   def self.token_for(user)
     jwt_headers = {exp: 15.minute.from_now.to_i}
@@ -31,6 +42,10 @@ class User < ApplicationRecord
   end
 end
 
+private
 
-  
-    
+def create_buyer_if_needed
+  if role == 'buyer' && buyer.nil?
+    create_buyer
+  end
+end
