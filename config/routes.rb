@@ -1,15 +1,20 @@
 Rails.application.routes.draw do
   devise_for :users
   resources :stores do
+    get 'products', on: :member
+
     member do
       get :toggle_activation
+
+      get 'products', to: 'stores#products'
+
     end
-    
     resources :buyers
     resources :orders, only: [:index, :create, :update, :destroy]
     resources :products, only: [:index ]
   end
-
+  resources :orders
+  resources :orders, only: [:create, :index, :new]
   resources :buyers do
     member do
      get :toggle_activation
@@ -22,7 +27,7 @@ Rails.application.routes.draw do
   
   get 'products/store/:store_id' => 'products#products_store', as: :products_by_store
   scope :buyers do
-    resources :orders, only: [:index, :create, :update, :destroy]
+    resources :orders, only: [:index, :create,:show, :update, :destroy]
   end
   
   root to: 'welcome#index'
