@@ -1,0 +1,26 @@
+<h1>Pedidos</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Data de Criação</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @orders.each do |order| %>
+      <tr>
+        <td><%= order.id %></td>
+        <td><%= order.created_at %></td>
+        <td>
+          <%= link_to 'Ver', order_path(order) %>
+
+      
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'Criar pedido', new_order_path %>

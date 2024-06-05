@@ -1,0 +1,95 @@
+<h1>Editar Pedido</h1>
+
+<%= form_with(model: @order, local: true) do |form| %>
+  <% if @order.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@order.errors.count, "erro") %> proibiu este pedido de ser salvo:</h2>
+      <ul>
+        <% @order.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :store_id %>
+    <%= form.text_field :store_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :buyer_id %>
+    <%= form.text_field :buyer_id %>
+  </div>
+
+  <h3>Itens do Pedido</h3>
+  <div id="order_items">
+    <%= form.fields_for :order_items do |order_item_form| %>
+      <div class="order-item">
+        <div class="field">
+          <%= order_item_form.label :product_title %>
+          <%= order_item_form.text_field :product_id %>
+        </div>
+
+        <div class="field">
+          <%= order_item_form.label :amount %>
+          <%= order_item_form.text_field :amount %>
+        </div>
+
+        <div class="field">
+          <%= order_item_form.label :price %>
+          <%= order_item_form.text_field :price %>
+        </div>
+        <%= order_item_form.hidden_field :_destroy %>
+        <%= link_to 'Remover', '#', class: 'remove-item' %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= link_to 'Adicionar Item', '#', class: 'add-item' %>
+
+  <div class="actions">
+    <%= form.submit "Salvar" %>
+  </div>
+<% end %>
+
+<%= link_to 'Voltar', orders_path %>
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function() {
+  document.querySelector('.add-item').addEventListener('click', function(e) {
+  e.preventDefault();
+  var orderItems = document.getElementById('order_items');
+  var newItemIndex = new Date().getTime(); 
+  var newItem = document.createElement('div');
+  newItem.innerHTML = `
+    <div class="order-item">
+      <div class="field">
+        <label for="order_order_items_attributes_${newItemIndex}_product_title">Product Title</label>
+        <input type="text" name="order[order_items_attributes][${newItemIndex}][product_id]" id="order_order_items_attributes_${newItemIndex}_product_title">
+      </div>
+      <div class="field">
+        <label for="order_order_items_attributes_${newItemIndex}_amount">Amount</label>
+        <input type="text" name="order[order_items_attributes][${newItemIndex}][amount]" id="order_order_items_attributes_${newItemIndex}_amount">
+      </div>
+      <div class="field">
+        <label for="order_order_items_attributes_${newItemIndex}_price">Price</label>
+        <input type="text" name="order[order_items_attributes][${newItemIndex}][price]" id="order_order_items_attributes_${newItemIndex}_price">
+      </div>
+      <a href="#" class="remove-item">Remove</a>
+    </div>`;
+  orderItems.appendChild(newItem);
+});
+
+    document.querySelector('#order_items').addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-item')) {
+        e.preventDefault();
+        var orderItem = e.target.closest('.order-item');
+        orderItem.style.display = 'none';
+        orderItem.querySelector('input[name*="_destroy"]').value = 'true';
+      }
+    });
+  });
+</script>
+

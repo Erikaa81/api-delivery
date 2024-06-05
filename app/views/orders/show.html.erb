@@ -1,0 +1,27 @@
+<h1>Detalhes do Pedido</h1>
+
+  <p><strong>ID do Pedido:</strong> <%= @order.id %></p>
+  <p><strong>Comprador:</strong> <%= @order.buyer.email %></p>
+  <p><strong>Data do Pedido:</strong> <%= @order.created_at.strftime("%d/%m/%Y %H:%M") %></p>
+  
+  <h2>Itens do Pedido</h2>
+  <ul>
+    <% total_order = 0 %>
+    <% @order.order_items.includes([:product]).each do |item| %>
+      <% total_item = item.price * item.amount %>
+      <% total_order += total_item %>
+      <li>
+        <p><strong>Produto:</strong> <%= item.product.title %></p>
+        <p><strong>Quantidade:</strong> <%= item.amount %></p>
+        <p><strong>Preço:</strong> <%= number_to_currency(item.price) %></p>
+        <p><strong>Total do Item:</strong> <%= number_to_currency(total_item) %></p>
+      </li>
+    <% end %>
+  </ul>
+  
+  <p><strong>Total do Pedido:</strong> <%= number_to_currency(total_order) %></p>
+  <div>
+    <%= link_to 'Editar', edit_order_path(@order) %>
+
+  <%= button_to "Excluir este pedido", @order, method: :delete, data: { confirm: "Tem certeza?" } %>
+  <%= link_to "Voltar para pedidos", orders_path %>

@@ -1,0 +1,156 @@
+<h1>Criar Novo Pedido</h1>
+
+<%= form_for @order do |f| %>
+  <% if @order.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@order.errors.count, "error") %> proibiu este pedido de ser salvo:</h2>
+      <ul>
+        <% @order.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+  <%= f.label :store_id %>
+  <div>
+    <%= f.text_field :store_id, class: 'store-id' %>
+  </div>
+</div>
+
+<% if current_user.admin? %>
+  <div class="field">
+    <%= f.label :buyer_id, "Comprador" %>
+    <div>
+      <%= f.collection_select :buyer_id, @buyers, :id, :email, prompt: "Selecione um comprador..." %>
+    </div>
+  </div>
+<% end %>
+
+  <h2>Itens do Pedido</h2>
+    
+  <div class="order-items">
+    <%= f.fields_for :order_items do |item_form| %>
+      <%= render 'order_item_fields', f: item_form %>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= link_to 'Adicionar Item', '#', class: 'add-item' %>
+    <%= f.submit %>
+  </div>
+<% end %>
+
+<%= link_to 'Voltar', orders_path %>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const productSelects = document.querySelectorAll(".product-select");
+    const productPrices = document.querySelectorAll(".product-price");
+    const storeIdField = document.querySelector(".store-id");
+    const addItemButton = document.querySelector(".add-item");
+    const orderItemsContainer = document.querySelector(".order-items");
+
+    const products = <%= raw @products.to_json %>;
+
+    function updateProductPrice(selectElement, priceElement) {
+      const selectedProductId = selectElement.value;
+      const product = products.find(product => product.id == selectedProductId);
+      if (product) {
+        priceElement.value = product.price;
+      }
+    }
+
+    productSelects.forEach((select, index) => {
+      select.addEventListener("change", function() {
+        updateProductPrice(this, productPrices[index]);
+      });
+    });
+
+    storeIdField.addEventListener("change", function() {
+      const storeId = this.value;
+
+      if (storeId) {
+        fetch(`/stores/${storeId}/products.json`)
+          .then(response => response.json())
+          .then(products => {
+            productSelects.forEach(select => {
+              select.innerHTML = '<option value="">Selecione um produto...</option>';
+              products.filter(product => product.store_id == storeId).forEach(product => {
+                const option = document.createElement("option");
+                option.value = product.id;
+                option.textContent = product.title;
+                option.dataset.price = product.price;
+                select.appendChild(option);
+              });
+            });
+          })
+         
+          .catch(error => console.error("Erro ao carregar produtos:", error));
+      }
+    });
+
+    addItemButton.addEventListener("click", function(event) {
+      event.preventDefault();
+      const storeId = storeIdField.value;
+    
+      if (storeId) {
+        const newItem = document.createElement("div");
+        newItem.innerHTML = `
+          <div class="field order-item">
+            <label for="order_order_items_attributes_${Date.now()}_product_id">Produto</label>
+            <select name="order[order_items_attributes][${Date.now()}][product_id]" class="product-select">
+              <option value="">Selecione um produto...</option>
+            </select>
+    
+            <label for="order_order_items_attributes_${Date.now()}_quantity">Quantidade</label>
+            <input type="number" name="order[order_items_attributes][${Date.now()}][quantity]" />
+    
+            <label for="order_order_items_attributes_${Date.now()}_price">Preço</label>
+            <input type="text" name="order[order_items_attributes][${Date.now()}][price]" class="product-price" readonly />
+    
+            <a href="#" class="remove-item">Remover</a>
+          </div>
+        `;
+        orderItemsContainer.appendChild(newItem);
+    
+        const newProductSelect = newItem.querySelector(".product-select");
+        const newProductPrice = newItem.querySelector(".product-price");
+    
+        fetch(`/stores/${storeId}/products.json`)
+          .then(response => response.json())
+          .then(products => {
+            products.forEach(product => {
+              const option = document.createElement("option");
+              option.value = product.id;
+              option.textContent = product.title;
+              option.dataset.price = product.price;
+              newProductSelect.appendChild(option);
+            });
+          })
+          .catch(error => console.error("Erro ao carregar produtos:", error));
+    
+        newProductSelect.addEventListener("change", function() {
+          updateProductPrice(this, newProductPrice);
+        });
+    
+        newItem.querySelector(".remove-item").addEventListener("click", function(event) {
+          event.preventDefault();
+          newItem.remove();
+        });
+      } else {
+        alert("Por favor, selecione uma loja antes de adicionar itens ao pedido.");
+      }
+    });
+    
+
+    document.querySelectorAll(".remove-item").forEach(button => {
+      button.addEventListener("click", function(event) {
+        event.preventDefault();
+        this.closest(".order-item").remove();
+      });
+    });
+  });
+</script>

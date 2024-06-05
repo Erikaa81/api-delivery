@@ -1,0 +1,12 @@
+<div class="field order-item">
+  <%= f.label :product_id, "Produto" %>
+  <%= f.select :product_id, options_from_collection_for_select(@products, :id, :title), {}, class: 'product-select' %>
+
+  <%= f.label :amount, "Quantidade" %>
+  <%= f.number_field :amount %>
+
+  <%= f.label :price, "Preço" %>
+  <%= f.text_field :price, class: 'product-price', readonly: true %>
+
+  <%= link_to 'Remover', '#', class: 'remove-item' %>
+</div>
