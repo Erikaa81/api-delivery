@@ -4,6 +4,7 @@ class Store < ApplicationRecord
   has_many :products
   has_one_attached :image
   before_validation :ensure_seller
+  has_many :orders
   validates :name, presence: true, length: { minimum: 3 }
   validates :active, inclusion: { in: [true, false] }
 

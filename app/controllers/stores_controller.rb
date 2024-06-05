@@ -1,6 +1,6 @@
 class StoresController < ApplicationController
   skip_forgery_protection only: [:create, :update, :destroy]
-  before_action :authenticate!
+  before_action :authenticate!, except: [:products] 
   before_action :set_store, only: %i[show edit update destroy]
   rescue_from User::InvalidToken, with: :not_authorized
 
@@ -89,6 +89,15 @@ class StoresController < ApplicationController
     redirect_to stores_url
   end
   
+  def products
+    @store = Store.find(params[:id])
+    @products = @store.products
+
+    respond_to do |format|
+      format.json { render json: @products }
+    end
+  end
+end
   private
 
   def set_store
@@ -103,4 +112,4 @@ class StoresController < ApplicationController
       required.permit(:name)
     end
   end
-end
+

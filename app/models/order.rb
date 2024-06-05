@@ -1,9 +1,10 @@
 class Order < ApplicationRecord
-  belongs_to :buyer, class_name: "User"
+  belongs_to :buyer, class_name: 'User', foreign_key: 'buyer_id'
   belongs_to :store
-  has_many :order_items
+  has_many :order_items, dependent: :destroy
   has_many :products, through: :order_items
-
+  accepts_nested_attributes_for :order_items, allow_destroy: true
+  
   validate :buyer_role
 
   state_machine initial: :created do
@@ -23,7 +24,6 @@ end
   def accept
     if self.state == :created
       update state: :accepted
-    # Send a Notification
     else
       raise "Can't change to ':accepted' from #{self.state}"
     end

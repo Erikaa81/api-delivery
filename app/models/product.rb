@@ -2,7 +2,9 @@ class Product < ApplicationRecord
   belongs_to :store
   has_one_attached :image
   scope :not_deleted, -> { where(deleted: false) }
-
+  has_many :order_items
+  has_many :orders, through: :order_items
+  
   validates :title, presence: true
   validates :price, presence: true, numericality: { greater_than: 0 }
 

@@ -1,5 +1,5 @@
 class Credential < ApplicationRecord
-  enum access: [:seller, :buyer]
+  enum access: [:seller, :buyer, :admin]
 
   def self.create_access(access)
     raise "Invalid Access" if !Credential.accesses.keys.map(&:to_sym).include?(access)
