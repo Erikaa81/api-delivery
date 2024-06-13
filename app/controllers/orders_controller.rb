@@ -1,4 +1,5 @@
 class OrdersController < ApplicationController
+
   skip_forgery_protection
   before_action :authenticate!
   before_action :set_buyer, only: [:update]
@@ -9,6 +10,10 @@ class OrdersController < ApplicationController
     @order.order_items.build 
     @buyers = User.where(role: 'buyer') if current_user.admin? 
     @products = Product.all 
+    respond_to do |format|
+      format.html # Renderiza o template HTML associado, se necessário
+      format.json { render json: @order } # Responde com JSON para solicitações JSON
+    end
   end
 
   def edit
@@ -37,11 +42,12 @@ class OrdersController < ApplicationController
   def index
     if current_user.role == 'buyer'
       @orders = Order.where(buyer_id: current_user.id)
+    elsif current_user.role == 'seller'
+      @orders = Order.where(seller_id: current_user.id)
     elsif current_user.role == 'admin'
       @orders = Order.all
     end
-
-    respond_to do |format|
+      respond_to do |format|
       format.html
       format.json { render json: @orders.as_json(include: { order_items: { include: :product } }) }
     end
@@ -83,6 +89,6 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:store_id, :buyer_id, order_items_attributes: [:id, :product_id, :amount, :price, :_destroy]).reject { |_, attributes| attributes['_destroy'] == 'true' }
+    params.require(:order).permit(:store_id, :buyer_id, order_items_attributes: [:id, :product_id, :amount, :price, :_destroy])
   end
 end
