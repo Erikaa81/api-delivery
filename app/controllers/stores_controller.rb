@@ -3,6 +3,7 @@ class StoresController < ApplicationController
   before_action :authenticate!, except: [:products] 
   before_action :set_store, only: %i[show edit update destroy]
   rescue_from User::InvalidToken, with: :not_authorized
+  include ActionController::Live
 
   def index
     if current_user.present?
@@ -19,8 +20,7 @@ class StoresController < ApplicationController
       render json: { error: "Você deve estar logado para visualizar esta página." }, status: :unauthorized
     end
   end
-
-
+  
   def show
     @store = Store.find(params[:id])
     respond_to do |format|
@@ -28,7 +28,6 @@ class StoresController < ApplicationController
       format.json { render json: @store.as_json(methods: :image_url) }
     end
   end
-
 
   def new
     @store = Store.new
@@ -97,7 +96,30 @@ class StoresController < ApplicationController
       format.json { render json: @products }
     end
   end
+
+  def new_order 
+    response.headers["Content-Type"] = "text/event-stream"
+    sse = SSE.new(response.stream, retry: 300, event: "waiting-orders")
+
+    EventMachine.run do 
+      periodic_timer = EventMachine::PeriodicTimer.new(3) do
+      order = Order.where(store_id: params[:id], state: :created).last
+      if order 
+        message = { time: Time.now, order: order }
+        sse.write(message, event: "new-order")
+      else
+        sse.write({ time: Time.now }, event: "no")
+      end
+    end
+  end
+
+  rescue IOError, ActionController::Live::ClientDisconnected
+    sse.close if sse 
+  ensure
+    sse.close if sse  
+  end
 end
+
   private
 
   def set_store
