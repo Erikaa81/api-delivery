@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   devise_for :users
+ 
   resources :stores do
     get 'products', on: :member
 
@@ -8,10 +9,15 @@ Rails.application.routes.draw do
 
       get 'products', to: 'stores#products'
 
+      get 'orders/new', to: 'stores#new_order'  
+
     end
-    resources :buyers
+
+    resources :buyers, only: [:update]
     resources :orders, only: [:index, :create, :update, :destroy]
     resources :products, only: [:index ]
+    get'/orders/new' => 'stores#neworder'
+    
   end
   resources :orders
   resources :orders, only: [:create, :index, :new]
@@ -20,11 +26,11 @@ Rails.application.routes.draw do
      get :toggle_activation
     end
   end
+
   get "listing" => "products#listing"
   post 'new' => 'registrations#create', as: :create_registration
   get 'me' => 'registrations#me'
   post 'sign_in' => 'registrations#sign_in'
-  
   get 'products/store/:store_id' => 'products#products_store', as: :products_by_store
   scope :buyers do
     resources :orders, only: [:index, :create,:show, :update, :destroy]
@@ -34,3 +40,4 @@ Rails.application.routes.draw do
   
   get 'up' => 'rails/health#show', as: :rails_health_check
 end
+
