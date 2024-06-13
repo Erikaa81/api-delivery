@@ -38,5 +38,6 @@ module Delivery
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    config.payment = config_for(:payment)
   end
 end
