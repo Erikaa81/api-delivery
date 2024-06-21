@@ -36,6 +36,33 @@
     <% end %>
   </div>
 
+
+  <h2>Dados de Pagamento</h2>
+  
+  <div class="field">
+    <%= f.fields_for :payment do |payment_form| %>
+      <div>
+        <%= payment_form.label :card_number, "Número do Cartão" %>
+        <%= payment_form.text_field :card_number %>
+      </div>
+      
+      <div>
+        <%= payment_form.label :expiration_date, "Data de Expiração" %>
+        <%= payment_form.date_select :expiration_date %>
+      </div>
+      
+      <div>
+        <%= payment_form.label :cvv, "CVV" %>
+        <%= payment_form.text_field :cvv %>
+      </div>
+      
+      <div>
+        <%= payment_form.label :amount, "Valor" %>
+        <%= payment_form.number_field :amount %>
+      </div>
+    <% end %>
+  </div>
+  
   <div class="actions">
     <%= link_to 'Adicionar Item', '#', class: 'add-item' %>
     <%= f.submit %>
