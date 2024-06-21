@@ -20,7 +20,12 @@ Rails.application.routes.draw do
     
   end
   resources :orders
-  resources :orders, only: [:create, :index, :new]
+  resources :orders, only: [:create, :index, :new] do
+    member do 
+      post 'approve'
+    end
+  end
+
   resources :buyers do
     member do
      get :toggle_activation
