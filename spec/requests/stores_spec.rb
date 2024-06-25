@@ -156,11 +156,13 @@ end
         expect(store.name).to eq "Loja da Mama"
       end
 
-      it "redirects to the store" do
-        store = Store.create! valid_attributes
+      it "updates the store and responds with 200 OK" do
+        store = Store.create!(valid_attributes)
         patch store_url(store), params: { store: new_attributes }
+  
         store.reload
-        expect(response).to redirect_to(store_url(store))
+        expect(store.name).to eq("Loja da Mama")
+        expect(response).to have_http_status(:ok)
       end
     end
   

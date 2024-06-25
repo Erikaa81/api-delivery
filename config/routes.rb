@@ -12,10 +12,9 @@ Rails.application.routes.draw do
       get 'orders/new', to: 'stores#new_order'  
 
     end
-
     resources :buyers, only: [:update]
     resources :orders, only: [:index, :create, :update, :destroy]
-    resources :products, only: [:index ]
+    resources :products, only: [:create, :index ]
     get'/orders/new' => 'stores#neworder'
     
   end
