@@ -1,25 +1,23 @@
-<%= form_with(model: buyer, local: true) do |form| %>
-  <% if buyer.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(buyer.errors.count, "error") %> prohibited this buyer from being saved:</h2>
+<%= form_with(model: @buyer, local: true) do |form| %>
+  <% if @buyer.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@buyer.errors.count, "error") %> prohibited this buyer from being saved:</h2>
       <ul>
-        <% buyer.errors.full_messages.each do |message| %>
+        <% @buyer.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
       </ul>
     </div>
   <% end %>
 
-   <%= form.fields_for :user do |user_form| %>
-    <div class="field">
-      <%= user_form.label :email %>
-      <%= user_form.text_field :email %>
-    </div>
-  <% end %>
+  <div class="field">
+    <%= form.fields_for :user do |user_form| %>
+      <%= user_form.label :name %>
+      <%= user_form.text_field :name %>
+    <% end %>
+  </div>
 
   <div class="actions">
     <%= form.submit %>
   </div>
-  
 <% end %>
-

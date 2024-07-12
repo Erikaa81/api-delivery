@@ -4,7 +4,7 @@ class RegistrationsController < ApplicationController
  
   def me
     render json: {
-    id: current_user.id, email: current_user.email
+    id: current_user.id, email: current_user.email,  name: current_user.name
     }
     
     end
@@ -27,7 +27,8 @@ class RegistrationsController < ApplicationController
     @user.role = current_credential.access
 
     if @user.save
-      render json: {"email": @user.email}
+      render json: {"email": @user.email, "name": @user.name}
+    
     else
       render json: {}, status: :unprocessable_entity
     end

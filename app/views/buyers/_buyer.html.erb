@@ -1,7 +1,9 @@
-<div id="<%= dom_id buyer %>">
-  <p>
-    <strong>Email:</strong>
-    <%= buyer.user.email %>
-  </p>
+<p>
+  <strong>Nome:</strong>
+  <%= @buyer.user.name if @buyer.user %>
+</p>
 
-</div>
+<p>
+  <strong>Email:</strong>
+  <%= @buyer.user.email if @buyer.user %>
+</p>

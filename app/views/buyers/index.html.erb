@@ -3,7 +3,9 @@
 <table>
   <thead>
     <tr>
-      <th>Email</th>
+      <th>Nome</th>
+    <th>Email</th>
+      
       <th colspan="4">Ações</th> <!-- Adicionando uma coluna extra para as ações -->
     </tr>
   </thead>
@@ -11,7 +13,9 @@
   <tbody>
     <% @buyers.each do |buyer| %>
       <tr>
+        <td><%= buyer.user.name %></td>
         <td><%= buyer.user.email %></td>
+
         <td><%= link_to 'Mostrar', buyer %></td>
         <td><%= link_to 'Editar', edit_buyer_path(buyer) %></td>
         <td>

@@ -47,15 +47,14 @@ class BuyersController < ApplicationController
   def update
     respond_to do |format|
       if @buyer.user.update(user_params)
-        format.json { render json: @buyer, status: :ok }
-        format.html { redirect_to @buyer } 
+        format.json { render json: @buyer.as_json(include: :user), status: :ok }
+        format.html { redirect_to @buyer, notice: 'Comprador atualizado com sucesso.' }
       else
         format.json { render json: @buyer.errors, status: :unprocessable_entity }
-        format.html { render :edit } 
+        format.html { render :edit }
+      end
     end
   end
-end  
-
   def destroy
     @buyer.destroy
     redirect_to buyers_url, notice: 'Comprador excluído com sucesso.'
@@ -73,6 +72,7 @@ end
 
   private
 
+ 
   def set_buyer
     @buyer = params[:id] ? Buyer.find(params[:id]) : current_user.buyer
   end
@@ -80,12 +80,12 @@ end
   def buyer_params
     params.require(:buyer).permit(
       :user_id,
-      user_attributes: [:id, :email, :password, :password_confirmation]
+      user_attributes: [:name, :id, :email, :password, :password_confirmation]
     )
   end
 
   def user_params
-    params.require(:buyer).require(:user_attributes).permit(:email, :password, :password_confirmation, :role)
+    params.require(:buyer).require(:user_attributes).permit(:name, :email, :password, :password_confirmation, :role)
   end
 
   def authorize_buyer
